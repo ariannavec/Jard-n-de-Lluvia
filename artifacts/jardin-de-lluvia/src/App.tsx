@@ -1,10 +1,10 @@
 import { Switch, Route, Router as WouterRouter } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Home from "@/pages/Home";
+import Landing from "@/pages/Landing";
 
 const queryClient = new QueryClient();
 
-// Simple Not Found Component for fallback
 function NotFound() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
@@ -22,7 +22,8 @@ function NotFound() {
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={Home} />
+      <Route path="/" component={Landing} />
+      <Route path="/app" component={Home} />
       <Route component={NotFound} />
     </Switch>
   );

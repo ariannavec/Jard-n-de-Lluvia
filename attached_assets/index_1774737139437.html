@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parques de Lluvia - Microclimas para Hermosillo</title>
+    <style>
+        :root {
+            --verde-claro: #99cc99;
+            --verde-vivo: #4ade80;
+            --verde-deep: #4ade80; 
+            --blanco: #ffffff;
+            --amarillo-pastel: #fdfd96;
+            --gris-suave: #f4f7f6;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.3);
+            --titulo-suave: #3a5a40; 
+            --azul-lluvia: rgba(173, 216, 230, 0.6); /* Azul claro para la lluvia */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            background-color: var(--gris-suave);
+            color: #333;
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        /* --- Estética de Gotas de Lluvia (Color actualizado a Azul Claro) --- */
+        .rain-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10; 
+            transition: opacity 1s ease-out;
+        }
+
+        .drop {
+            position: absolute;
+            /* Gradiente actualizado a azul claro */
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, var(--azul-lluvia) 50%, rgba(255, 255, 255, 0.8) 100%);
+            width: 2px;
+            height: 80px;
+            top: -100px;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(115vh);
+            }
+        }
+
+        .content-wrapper {
+            flex: 1 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* --- Animaciones --- */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease-out;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- Hero Section --- */
+        header {
+            height: 100vh;
+            background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), 
+                        url('https://proyectopuente.com.mx/wp-content/uploads/2021/06/areas-verdes-100.jpg') no-repeat center center;
+            background-size: cover;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::after {
+            content: "";
+            position: absolute;
+            bottom: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120%;
+            height: 100px;
+            background: var(--gris-suave);
+            border-radius: 50% 50% 0 0;
+            z-index: 5;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 20;
+        }
+
+        .hero-content h1 {
+            font-size: clamp(3rem, 8vw, 5rem);
+            color: var(--blanco); 
+            margin-bottom: 0.2rem;
+            letter-spacing: -1px;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.4);
+        }
+
+        .eslogan {
+            font-weight: 600;
+            color: var(--amarillo-pastel);
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+        }
+
+        .hero-content p {
+            font-size: clamp(1.1rem, 3vw, 1.5rem);
+            max-width: 700px;
+            margin: 0 auto 2rem;
+            color: var(--blanco);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+        }
+
+        .btn-primary {
+            background-color: var(--blanco);
+            color: #1e3a20;
+            padding: 18px 32px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            display: inline-block;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            position: relative;
+            z-index: 30; 
+            margin-bottom: 60px; 
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.05) translateY(-2px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+            background-color: #f0fdf4;
+        }
+
+        /* --- Secciones --- */
+        .features {
+            padding: 100px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 25px;
+        }
+
+        .card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            padding: 35px;
+            border-radius: 24px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.07);
+            transition: transform 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.85);
+        }
+
+        .card h3 {
+            color: var(--titulo-suave);
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+        }
+
+        .card .icon {
+            font-size: 2.2rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .how-it-works {
+            padding: 100px 20px;
+            background-color: rgba(235, 245, 235, 0.8);
+            text-align: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .how-it-works h2 {
+            font-size: 2.5rem;
+            color: var(--titulo-suave);
+            margin-bottom: 50px;
+        }
+
+        .steps-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            text-align: left;
+        }
+
+        .step {
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+            background: var(--blanco);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+        }
+
+        .step-number {
+            background: var(--verde-deep);
+            color: #1e3a20;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .details {
+            padding: 80px 20px;
+            background-color: var(--blanco);
+        }
+
+        .details-container {
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .details h2 {
+            font-size: 2.5rem;
+            color: var(--titulo-suave);
+            margin-bottom: 30px;
+        }
+
+        .tech-grid {
+            text-align: left;
+            margin-top: 40px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .tech-grid { grid-template-columns: 1fr; }
+        }
+
+        .tech-item {
+            border-left: 4px solid var(--amarillo-pastel);
+            padding-left: 20px;
+        }
+
+        .tech-item h4 {
+            color: var(--titulo-suave);
+            margin-bottom: 10px;
+        }
+
+        /* --- Footer --- */
+        footer {
+            flex-shrink: 0;
+            background-color: #1e3a20; 
+            color: var(--blanco);
+            padding: 60px 20px;
+            text-align: center;
+            position: relative;
+            z-index: 20;
+            margin-top: auto;
+        }
+
+        footer a {
+            color: var(--verde-vivo);
+            text-decoration: none;
+            font-size: 1.2rem;
+            border-bottom: 1px solid transparent;
+            transition: border 0.3s;
+        }
+
+        footer a:hover {
+            border-bottom: 1px solid var(--verde-vivo);
+        }
+
+        .footer-logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            display: block;
+            color: var(--verde-vivo);
+        }
+
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--gris-suave);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--verde-claro);
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="rain-container" id="rain"></div>
+
+    <div class="content-wrapper">
+        <header>
+            <div class="hero-content">
+                <h1>Parques de Lluvia</h1>
+                <div class="eslogan">El desierto que respira frescura</div>
+                <p>Transformamos el calor extremo de Hermosillo en microclimas sostenibles mediante tecnología de riego inteligente y acuíferos confinados.</p>
+                <a href="#contacto" class="btn-primary">Adquirir información sobre servicio y producto</a>
+            </div>
+        </header>
+
+        <section class="features">
+            <div class="card reveal">
+                <span class="icon">🌵</span>
+                <h3>La Problemática</h3>
+                <p>Hermosillo enfrenta temperaturas récord. El abandono de espacios recreativos por el calor extremo degrada el tejido social. Necesitamos potenciar el uso de nuestras áreas verdes incluso en verano.</p>
+            </div>
+
+            <div class="card reveal">
+                <span class="icon">💧</span>
+                <h3>La Solución</h3>
+                <p>Generamos microclimas mediante un sistema de riego optimizado con acuíferos confinados. Una IA aprende las necesidades hídricas de árboles nativos, maximizando la sombra y la humedad relativa.</p>
+            </div>
+
+            <div class="card reveal">
+                <span class="icon">✨</span>
+                <h3>El Futuro</h3>
+                <p>Tras la implementación, los ciudadanos recuperan sus parques. Reducción de hasta 8°C en la temperatura local, menor consumo de agua y un ecosistema urbano resiliente y fresco.</p>
+            </div>
+
+            <div class="card reveal">
+                <span class="icon">🌐</span>
+                <h3>Nuestra Red</h3>
+                <p>Conectamos espacios públicos y privados en una red inteligente de enfriamiento urbano. Cada "Parque de Lluvia" contribuye a un corredor biológico que reduce el efecto de isla de calor en toda la ciudad.</p>
+            </div>
+        </section>
+
+        <section class="how-it-works reveal">
+            <h2>¿Cómo funciona?</h2>
+            <div class="steps-container">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div>
+                        <strong>Captación y Confinamiento:</strong> El sistema utiliza acuíferos confinados diseñados para almacenar agua a bajas temperaturas bajo el suelo, protegida de la evaporación solar extrema de Sonora.
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div>
+                        <strong>Monitoreo Inteligente:</strong> Sensores de humedad y temperatura instalados en la raíz de la vegetación nativa envían datos en tiempo real a una unidad central de procesamiento.
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div>
+                        <strong>Riego de Precisión:</strong> La IA analiza el ciclo de vida de cada árbol y activa el riego optimizado durante las horas de menor radiación, creando un bulbo húmedo que refresca el aire circundante.
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div>
+                        <strong>Generación de Microclima:</strong> A través de la evapotranspiración controlada de especies como el Palo Verde, el espacio reduce su temperatura, volviéndose apto para el uso recreativo continuo.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="details">
+            <div class="details-container reveal">
+                <h2>Ingeniería del Frescor</h2>
+                <p>Nuestro producto no es solo riego; es un sistema de gestión térmica urbana diseñado específicamente para el desierto de Sonora.</p>
+                
+                <div class="tech-grid">
+                    <div class="tech-item">
+                        <h4>Acuíferos Confinados</h4>
+                        <p>Almacenamiento subterráneo que evita la evaporación inmediata, permitiendo una reserva estratégica de agua fría.</p>
+                    </div>
+                    <div class="tech-item">
+                        <h4>Aprendizaje Vegetal</h4>
+                        <p>Sensores IoT que monitorean el estrés hídrico de especies como el Palo Verde y Mezquite para regar solo lo necesario.</p>
+                    </div>
+                    <div class="tech-item">
+                        <h4>Mitigación de Calor</h4>
+                        <p>Diseño de paisaje orientado a la creación de corrientes de aire fresco inducidas por la transpiración arbórea.</p>
+                    </div>
+                    <div class="tech-item">
+                        <h4>Optimización de Recursos</h4>
+                        <p>Reducción del 40% en el gasto de agua comparado con sistemas de riego convencionales por aspersión.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer id="contacto">
+        <span class="footer-logo">Parques de Lluvia</span>
+        <p>Haciendo de Hermosillo una ciudad más habitable.</p>
+        <br>
+        <p>¿Interesado en implementar esto en tu colonia o desarrollo?</p>
+        <br>
+        <a href="mailto:contacto@parquesdelluvia.hmo">contacto@parquesdelluvia.hmo</a>
+        <div style="margin-top: 40px; font-size: 0.8rem; opacity: 0.7;">
+            &copy; 2024 Parques de Lluvia - Innovación Climática Hermosillo.
+        </div>
+    </footer>
+
+    <script>
+        function createRain() {
+            const container = document.getElementById('rain');
+            const dropCount = 50; 
+
+            for (let i = 0; i < dropCount; i++) {
+                const drop = document.createElement('div');
+                drop.className = 'drop';
+                drop.style.left = Math.random() * 100 + 'vw';
+                
+                const duration = (Math.random() * 0.8 + 0.4) + 's';
+                drop.style.animationDuration = duration;
+                drop.style.animationDelay = (Math.random() * 3) + 's';
+                
+                drop.style.opacity = Math.random() * 0.6 + 0.2;
+                
+                container.appendChild(drop);
+            }
+
+            setTimeout(() => {
+                container.style.opacity = '0';
+                setTimeout(() => {
+                    container.innerHTML = '';
+                    container.style.display = 'none';
+                }, 1000);
+            }, 5000);
+        }
+
+        const revealElements = () => {
+            const reveals = document.querySelectorAll('.reveal');
+            
+            reveals.forEach(element => {
+                const windowHeight = window.innerHeight;
+                const elementTop = element.getBoundingClientRect().top;
+                const elementVisible = 100;
+                
+                if (elementTop < windowHeight - elementVisible) {
+                    element.classList.add('active');
+                }
+            });
+        };
+
+        window.addEventListener('scroll', revealElements);
+        window.onload = () => {
+            revealElements();
+            createRain();
+        };
+
+        document.querySelector('.btn-primary').addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href');
+            document.querySelector(targetId).scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    </script>
+</body>
+</html>
