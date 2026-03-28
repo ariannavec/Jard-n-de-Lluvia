@@ -1,0 +1,17 @@
+packages:
+  "framer-motion": "For beautiful entry animations and micro-interactions"
+  "recharts": "For data visualization charts"
+  "clsx": "For conditional class names"
+  "tailwind-merge": "For merging tailwind classes"
+
+images:
+  - path: "artifacts/jardin-de-lluvia/public/images/logo.png"
+    description: "A beautiful, minimalist geometric logo combining a stylized tree leaf and a water drop, using deep forest green and vibrant teal colors on a transparent background"
+    aspect_ratio: "1:1"
+  - path: "artifacts/jardin-de-lluvia/public/images/hero-bg.png"
+    description: "Abstract subtle topographic map pattern with soft green and earthy gradients, modern and clean, suitable for a sidebar background"
+    aspect_ratio: "16:9"
+
+notes:
+  - Frontend-only application, no backend API required.
+  - Calculations are performed client-side based on user inputs.

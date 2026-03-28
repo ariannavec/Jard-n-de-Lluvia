@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Jardín de Lluvia"
+version = "1.0.0"
+id = "artifacts/jardin-de-lluvia"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 19761
+
+[services.development]
+run = "pnpm --filter @workspace/jardin-de-lluvia run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/jardin-de-lluvia", "run", "build" ]
+publicDir = "artifacts/jardin-de-lluvia/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "19761"
+BASE_PATH = "/"
