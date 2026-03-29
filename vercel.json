@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "buildCommand": "pnpm run build",
+  "installCommand": "pnpm install",
+  "outputDirectory": "artifacts/jardin-de-lluvia/dist",
+  "framework": "vite",
+  "regions": ["sfo1"],
+  "env": {
+    "NODE_ENV": "production",
+    "VITE_API_URL": { "default": "https://api.example.com" }
+  }
+}

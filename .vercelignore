@@ -1,0 +1,12 @@
+node_modules
+pnpm-lock.yaml
+.git
+.env.local
+.env.*.local
+dist
+build
+*.log
+.DS_Store
+artifacts/mockup-sandbox
+artifacts/api-server
+scripts
